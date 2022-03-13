@@ -7,6 +7,7 @@ class CurrentUserSerializer < BasicUserSerializer
              :unread_notifications,
              :unread_private_messages,
              :unread_high_priority_notifications,
+             :all_unread_notifications,
              :read_first_notification?,
              :admin?,
              :notification_channel_position,
@@ -71,7 +72,8 @@ class CurrentUserSerializer < BasicUserSerializer
              :bookmark_auto_delete_preference,
              :pending_posts_count,
              :experimental_sidebar_enabled,
-             :status
+             :status,
+             :grouped_unread_high_priority_notifications
 
   delegate :user_stat, to: :object, private: true
   delegate :any_posts, :draft_count, :pending_posts_count, :read_faq?, to: :user_stat
@@ -318,5 +320,13 @@ class CurrentUserSerializer < BasicUserSerializer
 
   def status
     UserStatusSerializer.new(object.user_status, root: false)
+  end
+
+  def include_grouped_unread_high_priority_notifications?
+    SiteSetting.enable_revamped_user_menu
+  end
+
+  def include_all_unread_notifications?
+    SiteSetting.enable_revamped_user_menu
   end
 end
