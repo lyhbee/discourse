@@ -2,7 +2,7 @@ import UserMenuItemsList from "discourse/components/user-menu/items-list";
 import I18n from "I18n";
 
 export default class UserMenuNotificationsList extends UserMenuItemsList {
-  get filterByType() {
+  get filterByTypes() {
     return null;
   }
 
@@ -28,8 +28,12 @@ export default class UserMenuNotificationsList extends UserMenuItemsList {
 
   get itemsCacheKey() {
     let key = "recent-notifications";
-    if (this.filterByType) {
-      key += `-type-${this.filterByType}`;
+    let types = this.filterByTypes;
+    if (types) {
+      if (Array.isArray(types)) {
+        types = types.join(",");
+      }
+      key += `-type-${types}`;
     }
     return key;
   }
@@ -42,8 +46,12 @@ export default class UserMenuNotificationsList extends UserMenuItemsList {
       silent: this.currentUser.enforcedSecondFactor,
     };
 
-    if (this.filterByType) {
-      params.filter_by_type = this.filterByType;
+    let types = this.filterByTypes;
+    if (types) {
+      if (Array.isArray(types)) {
+        types = types.join(",");
+      }
+      params.filter_by_types = types;
     }
     return this.store
       .findStale("notification", params)

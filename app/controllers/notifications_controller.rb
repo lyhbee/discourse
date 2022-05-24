@@ -18,10 +18,12 @@ class NotificationsController < ApplicationController
 
     guardian.ensure_can_see_notifications!(user)
 
-    if notification_type = params[:filter_by_type]
-      notification_type = notification_type.to_sym
-      if !Notification.types.key?(notification_type)
-        raise Discourse::InvalidParameters.new("invalid notification type")
+    if notification_types = params[:filter_by_types]&.split(",")&.map(&:to_sym)
+      notification_types.map! do |type|
+        if !Notification.types.key?(type)
+          raise Discourse::InvalidParameters.new("invalid notification type: #{type}")
+        end
+        Notification.types[type]
       end
     end
 
@@ -29,12 +31,12 @@ class NotificationsController < ApplicationController
       limit = (params[:limit] || 15).to_i
       limit = 50 if limit > 50
 
-      if notification_type
+      if notification_types
         notifications = Notification
           .visible
           .includes(:topic)
           .recent(limit)
-          .where(notification_type: Notification.types[notification_type])
+          .where(notification_type: notification_types)
           .where(user_id: current_user.id)
           .to_a
         render_json_dump(
@@ -120,7 +122,7 @@ class NotificationsController < ApplicationController
   end
 
   def notification_params
-    params.permit(:notification_type, :user_id, :data, :read, :topic_id, :post_number, :post_action_id)
+    params.permit(:notification_types, :user_id, :data, :read, :topic_id, :post_number, :post_action_id)
   end
 
   def render_notification
