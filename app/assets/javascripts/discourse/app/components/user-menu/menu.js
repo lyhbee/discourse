@@ -1,6 +1,7 @@
 import GlimmerComponent from "discourse/components/glimmer";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
+import { LIKE_NOTIFICATION_FREQUENCY_TYPE } from "discourse/models/user";
 
 const DefaultTabId = "all-notifications";
 const DefaultPanelComponent = "user-menu/notifications-list";
@@ -42,11 +43,20 @@ export default class UserMenu extends GlimmerComponent {
         icon: "at",
         panelComponent: "user-menu/mentions-notifications-list",
       },
-      {
+    ];
+
+    if (
+      this.currentUser.like_notification_frequency !==
+      LIKE_NOTIFICATION_FREQUENCY_TYPE.never
+    ) {
+      list.push({
         id: "likes",
         icon: "heart",
         panelComponent: "user-menu/likes-notifications-list",
-      },
+      });
+    }
+
+    list.push(
       {
         id: "pms",
         icon: "far-envelope",
@@ -60,8 +70,8 @@ export default class UserMenu extends GlimmerComponent {
         id: "badges",
         icon: "certificate",
         panelComponent: "user-menu/badges-notifications-list",
-      },
-    ];
+      }
+    );
 
     if (this.currentUser.can_review) {
       list.push({
