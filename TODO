@@ -11,4 +11,5 @@ notification/reviewable store cache on the frontend - DONE
 check discourse-encrypt notifications (decrypt titles and whatnot)
 chat plugin notifications
 deprecate old notification/reviewable count attributes
-hide likes tab if like frequency setting is 'never'
+hide likes tab if like frequency setting is 'never' - DONE
+allow filterByType to work with multiple notification types (for liked and liked_consolidated)
