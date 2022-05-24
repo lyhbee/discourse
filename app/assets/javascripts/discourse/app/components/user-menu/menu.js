@@ -2,6 +2,7 @@ import GlimmerComponent from "discourse/components/glimmer";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
 import { LIKE_NOTIFICATION_FREQUENCY_TYPE } from "discourse/models/user";
+import { WITH_REMINDER_ICON } from "discourse/models/bookmark";
 
 const DefaultTabId = "all-notifications";
 const DefaultPanelComponent = "user-menu/notifications-list";
@@ -64,6 +65,15 @@ export default class UserMenu extends GlimmerComponent {
         count:
           this.currentUser.grouped_unread_high_priority_notifications[
             this.site.notification_types.private_message
+          ] || 0,
+      },
+      {
+        id: "bookmarks",
+        icon: WITH_REMINDER_ICON,
+        panelComponent: "user-menu/bookmarks-notifications-list",
+        count:
+          this.currentUser.grouped_unread_high_priority_notifications[
+            this.site.notification_types.bookmark_reminder
           ] || 0,
       },
       {
