@@ -548,7 +548,7 @@ class User < ActiveRecord::Base
       ) AS X
       GROUP BY X.notification_type
     SQL
-    results.map! { |record| [record.type, record.count] }
+    results.map! { |row| [row.type, row.count] }
     results.to_h
   end
 

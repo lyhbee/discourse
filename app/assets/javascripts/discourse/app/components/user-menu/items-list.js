@@ -40,6 +40,14 @@ export default class UserMenuItemsList extends GlimmerComponent {
     );
   }
 
+  refreshList() {
+    this._load();
+  }
+
+  dismissWarningModal() {
+    return null;
+  }
+
   _load() {
     const cached = this._getCachedItems();
     if (cached?.length) {
@@ -82,8 +90,8 @@ export default class UserMenuItemsList extends GlimmerComponent {
 
   @action
   dismissButtonClick() {
-    // TODO do something
-    // eslint-disable-next-line no-console
-    console.log("do something");
+    throw new Error(
+      `dismissButtonClick must be implemented in ${this.constructor.name}.`
+    );
   }
 }

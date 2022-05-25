@@ -18,7 +18,7 @@ class NotificationsController < ApplicationController
 
     guardian.ensure_can_see_notifications!(user)
 
-    if notification_types = params[:filter_by_types]&.split(",")&.map(&:to_sym)
+    if notification_types = params[:filter_by_types]&.split(",")&.map(&:to_sym).presence
       notification_types.map! do |type|
         if !Notification.types.key?(type)
           raise Discourse::InvalidParameters.new("invalid notification type: #{type}")
@@ -90,7 +90,20 @@ class NotificationsController < ApplicationController
     if params[:id]
       Notification.read(current_user, [params[:id].to_i])
     else
-      Notification.where(user_id: current_user.id).includes(:topic).where(read: false).update_all(read: true)
+      if types = params[:dismiss_types]&.split(",")&.map(&:to_sym).presence
+        types.map! do |type|
+          if !Notification.types.key?(type)
+            raise Discourse::InvalidParameters.new("invalid notification type: #{type}")
+          end
+          Notification.types[type]
+        end
+      end
+      query = Notification
+        .where(user_id: current_user.id, read: false)
+        .includes(:topic)
+
+      query = query.where(notification_type: types) if types
+      query.update_all(read: true)
       current_user.saw_notification_id(Notification.recent_report(current_user, 1).max.try(:id))
     end
 

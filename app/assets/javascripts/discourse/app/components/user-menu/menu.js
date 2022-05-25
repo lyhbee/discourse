@@ -62,19 +62,13 @@ export default class UserMenu extends GlimmerComponent {
         id: "pms",
         icon: "far-envelope",
         panelComponent: "user-menu/pms-notifications-list",
-        count:
-          this.currentUser.grouped_unread_high_priority_notifications[
-            this.site.notification_types.private_message
-          ] || 0,
+        count: this._getUnreadCountForType("private_message"),
       },
       {
         id: "bookmarks",
         icon: WITH_REMINDER_ICON,
         panelComponent: "user-menu/bookmarks-notifications-list",
-        count:
-          this.currentUser.grouped_unread_high_priority_notifications[
-            this.site.notification_types.bookmark_reminder
-          ] || 0,
+        count: this._getUnreadCountForType("bookmark_reminder"),
       },
       {
         id: "badges",
@@ -103,6 +97,14 @@ export default class UserMenu extends GlimmerComponent {
         href: `${this.currentUser.path}/preferences`,
       },
     ];
+  }
+
+  _getUnreadCountForType(type) {
+    let key = "grouped_unread_high_priority_notifications.";
+    key += `${this.site.notification_types[type]}`;
+    // we're retrieving the value with get() so that Ember tracks the property
+    // and re-renders the UI when it changes
+    return this.currentUser.get(key) || 0;
   }
 
   @action

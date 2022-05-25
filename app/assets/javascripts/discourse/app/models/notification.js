@@ -1,5 +1,5 @@
 import RestModel from "discourse/models/rest";
-import discourseComputed from "discourse-common/utils/decorators";
+import { tracked } from "@glimmer/tracking";
 
 function coreComponentForType() {
   return {
@@ -26,11 +26,12 @@ export function resetComponentForType() {
   _componentForType = coreComponentForType();
 }
 
-export default RestModel.extend({
-  @discourseComputed("notification_type")
-  userMenuComponent(notificationType) {
+export default class Notification extends RestModel {
+  @tracked read;
+
+  get userMenuComponent() {
     const component =
-      _componentForType[this.site.notificationLookup[notificationType]];
+      _componentForType[this.site.notificationLookup[this.notification_type]];
     return component || DefaultItem;
-  },
-});
+  }
+}

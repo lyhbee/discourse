@@ -4,4 +4,8 @@ export default class UserMenuBadgesNotificationsList extends UserMenuNotificatio
   get filterByTypes() {
     return "granted_badge";
   }
+
+  dismissWarningModal() {
+    return null;
+  }
 }

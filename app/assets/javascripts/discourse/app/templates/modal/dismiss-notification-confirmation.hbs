@@ -1,5 +1,9 @@
 {{#d-modal-body headerClass="hidden" class="dismiss-notification-confirmation"}}
-  {{i18n "notifications.dismiss_confirmation.body" count=count}}
+  {{#if confirmationMessage}}
+    {{confirmationMessage}}
+  {{else}}
+    {{i18n "notifications.dismiss_confirmation.body.default" count=count}}
+  {{/if}}
 {{/d-modal-body}}
 
 <div class="modal-footer">
