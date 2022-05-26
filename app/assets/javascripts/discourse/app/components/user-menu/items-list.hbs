@@ -16,6 +16,7 @@
     {{/if}}
     {{#if this.showDismiss}}
       <button
+        type="button"
         class="btn btn-default notifications-dismiss btn-icon-text"
         title={{this.dismissTitle}}
         {{on "click" this.dismissButtonClick}}
@@ -26,6 +27,13 @@
     {{/if}}
   </div>
 {{else}}
-  {{! TODO: blank page syndrome}}
-  <h1>nothing here bro</h1>
+  {{#if this.emptyStateComponent}}
+    <this.emptyStateComponent/>
+  {{else}}
+    <div class="empty-state">
+      <span class="empty-state-title">
+        {{i18n "user.avatar_menu.generic_no_items"}}
+      </span>
+    </div>
+  {{/if}}
 {{/if}}

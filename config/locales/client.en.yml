@@ -1115,6 +1115,8 @@ en:
         enable: "Enable Notifications"
         each_browser_note: 'Note: You have to change this setting on every browser you use. All notifications will be disabled when in "do not disturb", regardless of this setting.'
         consent_prompt: "Do you want live notifications when people reply to your posts?"
+      avatar_menu:
+        generic_no_items: "There are no items in this list."
       dismiss: "Dismiss"
       dismiss_notifications: "Dismiss All"
       dismiss_notifications_tooltip: "Mark all unread notifications as read"

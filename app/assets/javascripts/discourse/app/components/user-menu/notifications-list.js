@@ -39,6 +39,12 @@ export default class UserMenuNotificationsList extends UserMenuItemsList {
     return key;
   }
 
+  get emptyStateComponent() {
+    if (this.constructor === UserMenuNotificationsList) {
+      return "user-menu/notifications-list-empty-state";
+    }
+  }
+
   fetchItems() {
     const params = {
       limit: 30,

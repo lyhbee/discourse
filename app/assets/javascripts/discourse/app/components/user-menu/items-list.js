@@ -12,9 +12,7 @@ export default class UserMenuItemsList extends GlimmerComponent {
     this._load();
   }
 
-  get itemsCacheKey() {
-    return null;
-  }
+  get itemsCacheKey() {}
 
   get showAll() {
     return false;
@@ -33,6 +31,8 @@ export default class UserMenuItemsList extends GlimmerComponent {
   }
 
   get dismissTitle() {}
+
+  get emptyStateComponent() {}
 
   fetchItems() {
     throw new Error(
