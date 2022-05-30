@@ -1,14 +1,26 @@
-import UserMenuDefaultNotificationItem from "discourse/components/user-menu/default-notification-item";
+import UserMenuNotificationItem from "discourse/components/user-menu/notification-item";
 import { userPath } from "discourse/lib/url";
+import I18n from "I18n";
 
-export default class UserMenuMembershipRequestConsolidatedNotificationItem extends UserMenuDefaultNotificationItem {
+export default class UserMenuMembershipRequestConsolidatedNotificationItem extends UserMenuNotificationItem {
   get url() {
     return userPath(
-      `${this.args.notification.username || this.currentUser.username}/messages`
+      `${this.notification.username || this.currentUser.username}/messages`
     );
   }
 
-  get count() {
-    return this.data.count;
+  get label() {
+    return I18n.t("notifications.membership_request_consolidated", {
+      group_name: this.data.group_name,
+      count: this.data.count,
+    });
+  }
+
+  get wrapLabel() {
+    return false;
+  }
+
+  get description() {
+    return null;
   }
 }

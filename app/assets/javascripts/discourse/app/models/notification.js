@@ -12,10 +12,12 @@ function coreComponentForType() {
     invitee_accepted: "user-menu/invitee-accepted-notification-item",
     membership_request_accepted:
       "user-menu/membership-request-accepted-notification-item",
+    membership_request_consolidated:
+      "user-menu/membership-request-consolidated-notification-item",
   };
 }
 
-const DefaultItem = "user-menu/default-notification-item";
+const DefaultItem = "user-menu/notification-item";
 let _componentForType = coreComponentForType();
 
 export function registerCustomComponentForType(notificationType, component) {

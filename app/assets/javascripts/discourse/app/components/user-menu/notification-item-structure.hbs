@@ -1,11 +1,9 @@
-<li class={{this.className}} ...attributes>
-  {{#if this.url}}
-    <a href={{this.url}} title={{if @title @title}}>
-      {{d-icon this.icon}}
-      <div>{{yield}}</div>
+<li ...attributes>
+  {{#if @url}}
+    <a href={{@url}} title={{if @linkTitle @linkTitle}}>
+      {{yield}}
     </a>
   {{else}}
-    {{d-icon this.icon}}
-    <div>{{yield}}</div>
+    {{yield}}
   {{/if}}
 </li>
