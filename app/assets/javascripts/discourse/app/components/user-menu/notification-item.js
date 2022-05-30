@@ -3,6 +3,15 @@ import { formatUsername, postUrl } from "discourse/lib/utilities";
 import { userPath } from "discourse/lib/url";
 import I18n from "I18n";
 
+let _decorators = [];
+export function registerTopicTitleDecorator(dec) {
+  _decorators.push(dec);
+}
+
+export function resetTopicTitleDecorators() {
+  _decorators = [];
+}
+
 export default class UserMenuNotificationItem extends GlimmerComponent {
   get className() {
     // TODO handle mod warning message in pm notification item
@@ -56,7 +65,7 @@ export default class UserMenuNotificationItem extends GlimmerComponent {
   }
 
   get description() {
-    return this.notification.fancy_title || this.data.topic_title;
+    return this._decoratedTopicTitle;
   }
 
   get descriptionElementClasses() {
@@ -86,5 +95,18 @@ export default class UserMenuNotificationItem extends GlimmerComponent {
 
   get notificationName() {
     return this.site.notificationLookup[this.notification.notification_type];
+  }
+
+  get _decoratedTopicTitle() {
+    let title = this.notification.fancy_title || this.data.topic_title;
+    if (title) {
+      _decorators.forEach((dec) => {
+        const updated = dec(title, this.notification);
+        if (updated) {
+          title = updated;
+        }
+      });
+    }
+    return title;
   }
 }

@@ -95,12 +95,15 @@ import { CUSTOM_USER_SEARCH_OPTIONS } from "select-kit/components/user-chooser";
 import { downloadCalendar } from "discourse/lib/download-calendar";
 import { consolePrefix } from "discourse/lib/source-identifier";
 import { addSectionLink } from "discourse/lib/sidebar/custom-topics-section-links";
+import { addNotificationsProcessor as addUserMenuNotificationsProcessor } from "discourse/components/user-menu/notifications-list";
+import { registerTopicTitleDecorator as registerUserMenuTopicTitleDecorator } from "discourse/components/user-menu/notification-item";
+import { registerComponentForType as registerUserMenuComponentForNotificationType } from "discourse/models/notification";
 
 // If you add any methods to the API ensure you bump up the version number
 // based on Semantic Versioning 2.0.0. Please update the changelog at
 // docs/CHANGELOG-JAVASCRIPT-PLUGIN-API.md whenever you change the version
 // using the format described at https://keepachangelog.com/en/1.0.0/.
-const PLUGIN_API_VERSION = "1.3.0";
+const PLUGIN_API_VERSION = "1.4.0";
 
 // This helper prevents us from applying the same `modifyClass` over and over in test mode.
 function canModify(klass, type, resolverName, changes) {
@@ -1679,6 +1682,82 @@ class PluginApi {
    */
   addTopicsSectionLink(arg) {
     addSectionLink(arg);
+  }
+
+  /**
+   * Registers a callback for processing a list of notifications before they're
+   * rendered in the user menu (a.k.a the notifications/avatar menu). If the
+   * callback returns a Promise, it'll be awaited until it settles before
+   * rendering the notifications list can begin. Useful for scenarios where
+   * additional data needs to be loaded before rendering the notifications menu
+   * or the notifications need to be processed (e.g. decrypting topic titles).
+   *
+   * ```
+   * api.addUserMenuNotificationsProcessor((notifications) => {
+   *   return decryptTopicTitles(notifications);
+   * })
+   * ```
+   *
+   * @callback addUserMenuNotificationsProcessorCallback
+   * @param {Notification[]} notifications - List of notifications that will be rendered in the user menu.
+   * @returns {undefined|Promise} - If a Promise is returned, it'll be awaited until it settles before rendering the menu begins.
+   *
+   * @param {addUserMenuNotificationsProcessorCallback} callback.
+   */
+  addUserMenuNotificationsProcessor(processor) {
+    addUserMenuNotificationsProcessor(processor);
+  }
+
+  /**
+   * Registers a callback for modifying topic titles before they're displayed
+   * in the user (a.k.a notifications/avatar) menu. If the callback returns a
+   * truthy value, the value will be displayed as the topic title for the
+   * notification. If multiple callbacks are registered, they'll be chained in
+   * the order they are registered and the final title will be the return value
+   * of the last callback that returns a truthy value.
+   *
+   * ```
+   * api.registerUserMenuTopicTitleDecorator((title, notification) => {
+   *   return title.replaceAll("word1", "word2");
+   * })
+   * ```
+   *
+   * @callback registerUserMenuTopicTitleDecoratorCallback
+   * @param {string} title - topic title (fancy_title) of the notification.
+   * @param {Notification} notification - Notification model object.
+   * @returns {undefined|string} - If a Promise is returned, it'll be awaited until it settles before rendering the menu begins.
+   *
+   * @param {registerUserMenuTopicTitleDecoratorCallback} callback.
+   */
+  registerUserMenuTopicTitleDecorator(decorator) {
+    registerUserMenuTopicTitleDecorator(decorator);
+  }
+
+  /**
+   * Registers or overrides the component used for rendering notifications of
+   * the given notificationType in the user menu. If your plugins adds a new
+   * notification type and you'd like to customize how it looks in the user
+   * menu, create a Glimmer component that inherits from
+   * UserMenuNotificationItem and override any of the public properties of the
+   * parent component. Then in an initializer, call this API method like so:
+   *
+   * ```
+   * api.registerUserMenuComponentForNotificationType(
+   *  "your_notification_type",
+   *  "user-menu/your-notification-type-notification-item"
+   * );
+   * ```
+   *
+   * There are no naming rules that your component needs to adhere to, but we
+   * recommend that you prefix your component with `user-menu` by putting it
+   * under a `user-menu` directory, and suffix the component with
+   * `-notification-item`.
+   *
+   * @param {string} notificationType - the key value of the notification type in the `Notification.types` enum on the server side.
+   * @param {string} component - the dasherized version of your component name, i.e. `user-menu/custom-component`.
+   */
+  registerUserMenuComponentForNotificationType(notificationType, component) {
+    registerUserMenuComponentForNotificationType(notificationType, component);
   }
 }
 

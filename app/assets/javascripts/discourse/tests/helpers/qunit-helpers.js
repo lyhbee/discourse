@@ -69,6 +69,9 @@ import {
   clearTagDecorateCallbacks,
   clearTextDecorateCallbacks,
 } from "discourse/lib/to-markdown";
+import { resetNotificationsProcessors as resetUserMenuNotificationsProcessors } from "discourse/components/user-menu/notifications-list";
+import { resetTopicTitleDecorators as resetUserMenuTopicTitleDecorators } from "discourse/components/user-menu/notification-item";
+import { resetCustomComponents as resetUserMenuCustomComponents } from "discourse/models/notification";
 
 export function currentUser() {
   return User.create(sessionFixtures["/session/current.json"].current_user);
@@ -192,6 +195,9 @@ function testCleanup(container, app) {
   clearTagDecorateCallbacks();
   clearBlockDecorateCallbacks();
   clearTextDecorateCallbacks();
+  resetUserMenuTopicTitleDecorators();
+  resetUserMenuNotificationsProcessors();
+  resetUserMenuCustomComponents();
 }
 
 export function discourseModule(name, options) {

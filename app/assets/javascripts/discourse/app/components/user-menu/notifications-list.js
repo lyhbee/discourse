@@ -4,6 +4,16 @@ import { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import { postRNWebviewMessage } from "discourse/lib/utilities";
 import showModal from "discourse/lib/show-modal";
+import { allSettled } from "rsvp";
+
+let _processors = [];
+export function addNotificationsProcessor(proc) {
+  _processors.push(proc);
+}
+
+export function resetNotificationsProcessors() {
+  _processors = [];
+}
 
 export default class UserMenuNotificationsList extends UserMenuItemsList {
   get filterByTypes() {
@@ -61,7 +71,11 @@ export default class UserMenuNotificationsList extends UserMenuItemsList {
       .findStale("notification", params)
       .refresh()
       .then((c) => {
-        return c.content;
+        return allSettled(
+          _processors.map((proc) => {
+            return proc(c.content);
+          })
+        ).then(() => c.content);
       });
   }
 

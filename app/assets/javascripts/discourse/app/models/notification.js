@@ -20,11 +20,11 @@ function coreComponentForType() {
 const DefaultItem = "user-menu/notification-item";
 let _componentForType = coreComponentForType();
 
-export function registerCustomComponentForType(notificationType, component) {
+export function registerComponentForType(notificationType, component) {
   _componentForType[notificationType] = component;
 }
 
-export function resetComponentForType() {
+export function resetCustomComponents() {
   _componentForType = coreComponentForType();
 }
 
