@@ -1,6 +1,10 @@
 import GlimmerComponent from "discourse/components/glimmer";
 import { formatUsername, postUrl } from "discourse/lib/utilities";
 import { userPath } from "discourse/lib/url";
+import { setTransientHeader } from "discourse/lib/ajax";
+import { action } from "@ember/object";
+import getURL from "discourse-common/lib/get-url";
+import cookie from "discourse/lib/cookie";
 import I18n from "I18n";
 
 let _decorators = [];
@@ -108,5 +112,14 @@ export default class UserMenuNotificationItem extends GlimmerComponent {
       });
     }
     return title;
+  }
+
+  @action
+  onClick() {
+    if (!this.notification.read) {
+      this.notification.set("read", true);
+      setTransientHeader("Discourse-Clear-Notifications", this.notification.id);
+      cookie("cn", this.notification.id, { path: getURL("/") });
+    }
   }
 }

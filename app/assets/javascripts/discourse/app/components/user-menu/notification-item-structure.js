@@ -1,7 +1,7 @@
 import GlimmerComponent from "discourse/components/glimmer";
 import { postUrl } from "discourse/lib/utilities";
 import { userPath } from "discourse/lib/url";
-import I18n from "I18n";
+import { action } from "@ember/object";
 
 // TODO handle notification icon aria stuff
 export default class UserMenuNotificationItemStructure extends GlimmerComponent {
@@ -44,5 +44,10 @@ export default class UserMenuNotificationItemStructure extends GlimmerComponent 
       classes.push(this.notificationName.replace(/_/g, "-"));
     }
     return classes.join(" ");
+  }
+
+  @action
+  onClick() {
+    this.args.onClick(...arguments);
   }
 }

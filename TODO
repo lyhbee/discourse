@@ -14,3 +14,4 @@ deprecate old notification/reviewable count attributes
 hide likes tab if like frequency setting is 'never' - DONE
 allow filterByType to work with multiple notification types (for liked and liked_consolidated) - DONE
 test membership_request_consolidated and membership_request_accepted and invitee_accepted notifications and custom notifications
+make sure clicking on notifications mark them as read (e.g. code review approval notifications) - DONE
