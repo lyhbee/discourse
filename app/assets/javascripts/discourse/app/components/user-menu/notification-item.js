@@ -102,7 +102,7 @@ export default class UserMenuNotificationItem extends GlimmerComponent {
   }
 
   get _decoratedTopicTitle() {
-    let title = this.notification.fancy_title || this.data.topic_title;
+    let title = this.notification.fancy_title;
     if (title) {
       _decorators.forEach((dec) => {
         const updated = dec(title, this.notification);
