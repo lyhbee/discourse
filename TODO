@@ -16,9 +16,9 @@ allow filterByType to work with multiple notification types (for liked and liked
 test membership_request_consolidated and membership_request_accepted and invitee_accepted notifications and custom notifications
 make sure clicking on notifications mark them as read (e.g. code review approval notifications) - DONE
 group mention notification missing group name - DONE
-moved post notification missing the word 'moved'
+moved post notification missing the word 'moved' - DONE
 watching first post notifications are showing the username instead of 'New Topic'. also check watch notification - DONE
-chat bookmark reminder missing title (data.title)
+chat bookmark reminder missing title (data.title) - DONE
 check notifications of type custom Notification.where(notification_type: 14).pluck("(data::json ->> 'message')").uniq
 check if notifications menu will rerender if new notification arrives while the menu is open
 explore emojiUnescape in user-menu/notification-item

@@ -10,4 +10,18 @@ export default class UserMenuBookmarkReminderNotificationItem extends UserMenuNo
     }
     return super.linkTitle;
   }
+
+  get description() {
+    return super.description || this.data.title;
+  }
+
+  get descriptionHtmlSafe() {
+    // description can be this.data.title in which case we don't want it to be
+    // HTML safe
+    if (super.description) {
+      return super.descriptionHtmlSafe;
+    } else {
+      return false;
+    }
+  }
 }
