@@ -15,6 +15,7 @@ function coreComponentForType() {
       "user-menu/membership-request-accepted-notification-item",
     membership_request_consolidated:
       "user-menu/membership-request-consolidated-notification-item",
+    moved_post: "user-menu/moved-post-notification-item",
     watching_first_post: "user-menu/watching-first-post-notification-item",
   };
 }
