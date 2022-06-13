@@ -17,7 +17,7 @@ test membership_request_consolidated and membership_request_accepted and invitee
 make sure clicking on notifications mark them as read (e.g. code review approval notifications) - DONE
 group mention notification missing group name - DONE
 moved post notification missing the word 'moved'
-watching first post notifications are showing the username instead of 'New Topic'. also check watch notification
+watching first post notifications are showing the username instead of 'New Topic'. also check watch notification - DONE
 chat bookmark reminder missing title (data.title)
 check notifications of type custom Notification.where(notification_type: 14).pluck("(data::json ->> 'message')").uniq
 check if notifications menu will rerender if new notification arrives while the menu is open
