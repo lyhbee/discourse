@@ -2312,6 +2312,7 @@ en:
       empty: "No notifications found."
       post_approved: "Your post was approved"
       reviewable_items: "items requiring review"
+      watching_first_post_label: "New Topic"
       mentioned: "<span>%{username}</span> %{description}"
       group_mentioned: "<span>%{username}</span> %{description}"
       quoted: "<span>%{username}</span> %{description}"
