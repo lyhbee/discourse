@@ -69,16 +69,10 @@ export default class UserMenuNotificationItem extends GlimmerComponent {
   }
 
   get description() {
-    return this._decoratedTopicTitle;
+    return this._decoratedTopicTitle || this.data.topic_title;
   }
 
-  get descriptionElementClasses() {
-    const classes = [];
-    if (this.data.group_name && this.notification.fancy_title) {
-      classes.push("mention-group", "notify");
-    }
-    return classes.join(" ");
-  }
+  get descriptionElementClasses() {}
 
   get descriptionHtmlSafe() {
     return !!this.notification.fancy_title;

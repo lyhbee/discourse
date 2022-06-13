@@ -3,13 +3,14 @@ import { tracked } from "@glimmer/tracking";
 
 function coreComponentForType() {
   return {
-    granted_badge: "user-menu/granted-badge-notification-item",
-    liked: "user-menu/liked-notification-item",
-    liked_consolidated: "user-menu/liked-consolidated-notification-item",
     bookmark_reminder: "user-menu/bookmark-reminder-notification-item",
     custom: "user-menu/custom-notification-item",
+    granted_badge: "user-menu/granted-badge-notification-item",
+    group_mentioned: "user-menu/group-mentioned-notification-item",
     group_message_summary: "user-menu/group-message-summary-notification-item",
     invitee_accepted: "user-menu/invitee-accepted-notification-item",
+    liked: "user-menu/liked-notification-item",
+    liked_consolidated: "user-menu/liked-consolidated-notification-item",
     membership_request_accepted:
       "user-menu/membership-request-accepted-notification-item",
     membership_request_consolidated:
