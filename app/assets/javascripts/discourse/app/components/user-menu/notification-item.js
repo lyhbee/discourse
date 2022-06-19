@@ -3,6 +3,7 @@ import { formatUsername, postUrl } from "discourse/lib/utilities";
 import { userPath } from "discourse/lib/url";
 import { setTransientHeader } from "discourse/lib/ajax";
 import { action } from "@ember/object";
+import { emojiUnescape } from "discourse/lib/text";
 import getURL from "discourse-common/lib/get-url";
 import cookie from "discourse/lib/cookie";
 import I18n from "I18n";
@@ -96,7 +97,7 @@ export default class UserMenuNotificationItem extends GlimmerComponent {
   }
 
   get _decoratedTopicTitle() {
-    let title = this.notification.fancy_title;
+    let title = emojiUnescape(this.notification.fancy_title);
     if (title) {
       _decorators.forEach((dec) => {
         const updated = dec(title, this.notification);
