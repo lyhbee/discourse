@@ -86,16 +86,14 @@ export default {
             if (staleIndex === -1) {
               let insertPosition = 0;
 
-              if (!siteSettings.enable_revamped_user_menu) {
-                // high priority and unread notifications are first
-                if (!lastNotification.high_priority || lastNotification.read) {
-                  const nextPosition = oldNotifications.findIndex(
-                    (n) => !n.high_priority || n.read
-                  );
+              // high priority and unread notifications are first
+              if (!lastNotification.high_priority || lastNotification.read) {
+                const nextPosition = oldNotifications.findIndex(
+                  (n) => !n.high_priority || n.read
+                );
 
-                  if (nextPosition !== -1) {
-                    insertPosition = nextPosition;
-                  }
+                if (nextPosition !== -1) {
+                  insertPosition = nextPosition;
                 }
               }
 
