@@ -87,6 +87,44 @@ describe NotificationsController do
           Discourse.clear_redis_readonly!
         end
 
+        it "should not bump last seen reviewable in readonly mode" do
+          user.update!(admin: true)
+          Fabricate(:reviewable)
+          Discourse.received_redis_readonly!
+          expect {
+            get "/notifications.json", params: { recent: true, bump_last_seen_reviewable: true }
+          }.not_to change { user.reload.last_seen_reviewable_id }
+        ensure
+          Discourse.clear_redis_readonly!
+        end
+
+        it "should not bump last seen reviewable if the user can't seen reviewables" do
+          Fabricate(:reviewable)
+          expect {
+            get "/notifications.json", params: { recent: true, bump_last_seen_reviewable: true }
+          }.not_to change { user.reload.last_seen_reviewable_id }
+        end
+
+        it "should not bump last seen reviewable if the bump_last_seen_reviewable param isn't true" do
+          user.update!(admin: true)
+          Fabricate(:reviewable)
+          expect {
+            get "/notifications.json", params: { recent: true }
+          }.not_to change { user.reload.last_seen_reviewable_id }
+        end
+
+        it "bumps last_seen_reviewable_id" do
+          user.update!(admin: true)
+          expect(user.last_seen_reviewable_id).to eq(nil)
+          reviewable = Fabricate(:reviewable)
+          get "/notifications.json", params: { recent: true, bump_last_seen_reviewable: true }
+          expect(user.reload.last_seen_reviewable_id).to eq(reviewable.id)
+
+          reviewable2 = Fabricate(:reviewable)
+          get "/notifications.json", params: { recent: true, bump_last_seen_reviewable: true }
+          expect(user.reload.last_seen_reviewable_id).to eq(reviewable2.id)
+        end
+
         it "get notifications with all filters" do
           notification = Fabricate(:notification, user: user)
           notification2 = Fabricate(:notification, user: user)
@@ -109,6 +147,40 @@ describe NotificationsController do
           expect(response.status).to eq(200)
           expect(JSON.parse(response.body)['notifications'].length).to be >= 1
           expect(JSON.parse(response.body)['notifications'][0]['read']).to eq(false)
+        end
+
+        it "can filter notifications by type" do
+          liked1 = Fabricate(
+            :notification,
+            user: user,
+            notification_type: Notification.types[:liked]
+          )
+          liked2 = Fabricate(
+            :notification,
+            user: user,
+            notification_type: Notification.types[:liked]
+          )
+          replied = Fabricate(
+            :notification,
+            user: user,
+            notification_type: Notification.types[:replied]
+          )
+          Fabricate(
+            :notification,
+            user: user,
+            notification_type: Notification.types[:mentioned]
+          )
+          get "/notifications.json", params: { recent: true, filter_by_types: "liked,replied" }
+          expect(response.status).to eq(200)
+          expect(
+            response.parsed_body["notifications"].map { |n| n["id"] }
+          ).to contain_exactly(liked1.id, liked2.id, replied.id)
+
+          get "/notifications.json", params: { recent: true, filter_by_types: "replied" }
+          expect(response.status).to eq(200)
+          expect(
+            response.parsed_body["notifications"].map { |n| n["id"] }
+          ).to contain_exactly(replied.id)
         end
 
         context 'when username params is not valid' do
@@ -163,6 +235,80 @@ describe NotificationsController do
       describe '#destroy' do
         it "can't delete notification" do
           delete_notification(403, :to)
+        end
+      end
+
+      describe '#mark_read' do
+        context "when targeting a notification by id" do
+          it 'can mark a notification as read' do
+            expect {
+              put "/notifications/mark-read.json", params: { id: notification.id }
+              expect(response.status).to eq(200)
+              notification.reload
+            }.to change { notification.read }.from(false).to(true)
+          end
+
+          it "doesn't mark a notification of another user as read" do
+            notification.update!(user_id: Fabricate(:user).id, read: false)
+            expect {
+              put "/notifications/mark-read.json", params: { id: notification.id }
+              notification.reload
+            }.not_to change { notification.read }
+          end
+        end
+
+        context "when targeting multiple notifications by type" do
+          it "can mark notifications as read" do
+            replied1 = notification
+            replied1.update!(notification_type: Notification.types[:replied])
+            mentioned = Fabricate(
+              :notification,
+              user: user,
+              notification_type: Notification.types[:mentioned],
+              read: false
+            )
+            liked = Fabricate(
+              :notification,
+              user: user,
+              notification_type: Notification.types[:liked],
+              read: false
+            )
+            replied2 = Fabricate(
+              :notification,
+              user: user,
+              notification_type: Notification.types[:replied],
+              read: true
+            )
+            put "/notifications/mark-read.json", params: {
+              dismiss_types: "replied,mentioned"
+            }
+            expect(response.status).to eq(200)
+            expect(replied1.reload.read).to eq(true)
+            expect(replied2.reload.read).to eq(true)
+            expect(mentioned.reload.read).to eq(true)
+
+            expect(liked.reload.read).to eq(false)
+          end
+
+          it "doesn't mark notifications of another user as read" do
+            mentioned1 = Fabricate(
+              :notification,
+              user: user,
+              notification_type: Notification.types[:mentioned],
+              read: false
+            )
+            mentioned2 = Fabricate(
+              :notification,
+              user: Fabricate(:user),
+              notification_type: Notification.types[:mentioned],
+              read: false
+            )
+            put "/notifications/mark-read.json", params: {
+              dismiss_types: "mentioned"
+            }
+            expect(mentioned1.reload.read).to eq(true)
+            expect(mentioned2.reload.read).to eq(false)
+          end
         end
       end
     end

@@ -135,7 +135,7 @@ class NotificationsController < ApplicationController
   end
 
   def notification_params
-    params.permit(:notification_types, :user_id, :data, :read, :topic_id, :post_number, :post_action_id)
+    params.permit(:notification_type, :user_id, :data, :read, :topic_id, :post_number, :post_action_id)
   end
 
   def render_notification
