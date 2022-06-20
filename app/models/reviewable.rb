@@ -545,12 +545,7 @@ class Reviewable < ActiveRecord::Base
     end
     results
   end
-  # ReviewableAkismetPost : Akismet post #n - <title>
-  # ReviewableAkismetUser : Akismet sus user @someone
-  # ReviewableFlaggedPost : @flagger post#n - <title>
-  # ReviewableQueuedPost : Queued new (post in|topic) <title>
-  # ReviewableUser : System sus user @someone
-  # Reviewable : Review item #<id>
+
   def self.recent_list_with_pending_first(user)
     order_clause = DB.sql_fragment(<<~SQL, pending: statuses[:pending])
       CASE WHEN reviewables.status = :pending THEN 0 ELSE 1 END,
