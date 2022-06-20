@@ -205,7 +205,7 @@ class Notification < ActiveRecord::Base
     Post.find_by(topic_id: topic_id, post_number: post_number)
   end
 
-  def self.recent_report(user, count = nil, high_pri_on_top: true)
+  def self.recent_report(user, count = nil)
     return unless user && user.user_option
 
     count ||= 10
@@ -226,8 +226,6 @@ class Notification < ActiveRecord::Base
     end
 
     notifications = notifications.to_a
-
-    return notifications if !high_pri_on_top
 
     if notifications.present?
       ids = DB.query_single(<<~SQL, limit: count.to_i)
