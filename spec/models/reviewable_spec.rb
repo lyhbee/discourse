@@ -244,6 +244,113 @@ RSpec.describe Reviewable, type: :model do
     end
   end
 
+  context ".unseen_list_for" do
+    fab!(:admin) { Fabricate(:admin) }
+    fab!(:moderator) { Fabricate(:moderator) }
+    fab!(:group) { Fabricate(:group) }
+    fab!(:user) { Fabricate(:user, groups: [group]) }
+    fab!(:admin_reviewable) { Fabricate(:reviewable, reviewable_by_moderator: false) }
+    fab!(:mod_reviewable) { Fabricate(:reviewable, reviewable_by_moderator: true) }
+    fab!(:group_reviewable) {
+      Fabricate(:reviewable, reviewable_by_group: group, reviewable_by_moderator: false)
+    }
+
+    context "for admins" do
+      it "returns a list of pending reviewables that haven't been seen by the user" do
+        list = Reviewable.unseen_list_for(admin, preload: false)
+        expect(list).to contain_exactly(admin_reviewable, mod_reviewable, group_reviewable)
+        admin_reviewable.update!(status: Reviewable.statuses[:approved])
+        list = Reviewable.unseen_list_for(admin, preload: false)
+        expect(list).to contain_exactly(mod_reviewable, group_reviewable)
+        admin.update!(last_seen_reviewable_id: group_reviewable.id)
+        list = Reviewable.unseen_list_for(admin, preload: false).pluck(:id)
+        expect(list).to be_empty
+      end
+    end
+
+    context "for moderators" do
+      it "returns a list of pending reviewables that haven't been seen by the user" do
+        list = Reviewable.unseen_list_for(moderator, preload: false)
+        expect(list).to contain_exactly(mod_reviewable)
+
+        group_reviewable.update!(reviewable_by_moderator: true)
+
+        list = Reviewable.unseen_list_for(moderator, preload: false)
+        expect(list).to contain_exactly(mod_reviewable, group_reviewable)
+
+        moderator.update!(last_seen_reviewable_id: mod_reviewable.id)
+
+        list = Reviewable.unseen_list_for(moderator, preload: false)
+        expect(list).to contain_exactly(group_reviewable)
+      end
+    end
+
+    context "for group moderators" do
+      before do
+        SiteSetting.enable_category_group_moderation = true
+      end
+
+      it "returns a list of pending reviewables that haven't been seen by the user" do
+        list = Reviewable.unseen_list_for(user, preload: false)
+        expect(list).to contain_exactly(group_reviewable)
+
+        user.update!(last_seen_reviewable_id: group_reviewable.id)
+
+        list = Reviewable.unseen_list_for(user, preload: false)
+        expect(list).to be_empty
+      end
+    end
+  end
+
+  context ".recent_list_with_pending_first" do
+    fab!(:pending_reviewable1) { Fabricate(:reviewable, score: 150) }
+    fab!(:pending_reviewable2) { Fabricate(:reviewable, score: 100) }
+    fab!(:approved_reviewable1) { Fabricate(:reviewable, score: 300) }
+    fab!(:approved_reviewable2) { Fabricate(:reviewable, score: 200) }
+
+    fab!(:admin) { Fabricate(:admin) }
+
+    it "returns a list of reviewables with pending items first" do
+      list = Reviewable.recent_list_with_pending_first(admin)
+      expect(list).to contain_exactly(
+        pending_reviewable1,
+        pending_reviewable2,
+        approved_reviewable1,
+        approved_reviewable2,
+      )
+
+      pending_reviewable1.update!(status: Reviewable.statuses[:rejected])
+
+      list = Reviewable.recent_list_with_pending_first(admin)
+      expect(list).to contain_exactly(
+        pending_reviewable2,
+        approved_reviewable1,
+        approved_reviewable2,
+        pending_reviewable1,
+      )
+    end
+
+    it "only includes reviewables whose score is above the minimum or are froced for review" do
+      SiteSetting.reviewable_default_visibility = 'high'
+      Reviewable.set_priorities({ high: 200 })
+
+      list = Reviewable.recent_list_with_pending_first(admin)
+      expect(list).to contain_exactly(
+        approved_reviewable1,
+        approved_reviewable2,
+      )
+
+      pending_reviewable1.update!(force_review: true)
+
+      list = Reviewable.recent_list_with_pending_first(admin)
+      expect(list).to contain_exactly(
+        pending_reviewable1,
+        approved_reviewable1,
+        approved_reviewable2,
+      )
+    end
+  end
+
   it "valid_types returns the appropriate types" do
     expect(Reviewable.valid_type?('ReviewableUser')).to eq(true)
     expect(Reviewable.valid_type?('ReviewableQueuedPost')).to eq(true)
