@@ -629,7 +629,6 @@ class User < ActiveRecord::Base
     @unread_total_notifications ||= notifications.where("read = false").count
   end
 
-  # TODO: add tests to verify these methods only return count of pending reviewables
   def reviewable_count
     Reviewable.list_for(self).count
   end
