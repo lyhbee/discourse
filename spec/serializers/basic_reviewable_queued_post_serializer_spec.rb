@@ -44,4 +44,8 @@ describe BasicReviewableQueuedPostSerializer do
       expect(get_json[:is_new_topic]).to eq(false)
     end
   end
+
+  it "is a subclass of BasicReviewableSerializer" do
+    expect(described_class).to be < BasicReviewableSerializer
+  end
 end

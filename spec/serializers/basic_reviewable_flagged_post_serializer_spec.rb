@@ -19,4 +19,8 @@ describe BasicReviewableFlaggedPostSerializer do
   it "includes topic_title of the flagged post" do
     expect(get_json[:topic_title]).to eq("Unsafe title &lt;a&gt;")
   end
+
+  it "is a subclass of BasicReviewableSerializer" do
+    expect(described_class).to be < BasicReviewableSerializer
+  end
 end
