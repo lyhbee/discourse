@@ -7,13 +7,16 @@ export default class UserMenuReviewableQueuedPostItem extends UserMenuDefaultRev
   }
 
   get description() {
-    const reviewable = this.args.item;
-    const title = reviewable.topic_title;
-    if (reviewable.is_new_topic) {
+    const title = this.reviewable.topic_title;
+    if (this.reviewable.is_new_topic) {
       return title;
     } else {
       return I18n.t("user_menu.reviewable.new_post_in_topic", { title });
     }
+  }
+
+  get descriptionHtmlSafe() {
+    return !this.reviewable.is_new_topic;
   }
 
   get icon() {

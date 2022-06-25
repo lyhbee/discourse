@@ -3,8 +3,7 @@ import I18n from "I18n";
 
 export default class UserMenuReviewableItem extends GlimmerComponent {
   get actor() {
-    const reviewable = this.args.item;
-    const flagger = reviewable.flagger_username;
+    const flagger = this.reviewable.flagger_username;
     if (flagger) {
       return flagger;
     } else {
@@ -13,13 +12,20 @@ export default class UserMenuReviewableItem extends GlimmerComponent {
   }
 
   get description() {
-    const reviewable = this.args.item;
     return I18n.t("user_menu.reviewable.default_item", {
-      reviewable_id: reviewable.id,
+      reviewable_id: this.reviewable.id,
     });
+  }
+
+  get descriptionHtmlSafe() {
+    return false;
   }
 
   get icon() {
     return "flag";
+  }
+
+  get reviewable() {
+    return this.args.item;
   }
 }

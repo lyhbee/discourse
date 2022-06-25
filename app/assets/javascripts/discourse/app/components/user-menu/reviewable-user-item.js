@@ -3,12 +3,15 @@ import I18n from "I18n";
 
 export default class UserMenuReviewableUserItem extends UserMenuDefaultReviewableItem {
   get description() {
-    const reviewable = this.args.item;
-    const username = reviewable.username;
+    const username = this.reviewable.username;
     return I18n.t("user_menu.reviewable.suspicious_user", { username });
   }
 
   get icon() {
     return "user";
+  }
+
+  get descriptionHtmlSafe() {
+    return false;
   }
 }

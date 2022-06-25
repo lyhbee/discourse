@@ -3,7 +3,11 @@
     {{d-icon this.icon}}
     <div>
       <span>{{this.actor}}</span>
-      <span>{{this.description}}</span>
+      {{#if this.descriptionHtmlSafe}}
+        <span>{{html-safe this.description}}</span>
+      {{else}}
+        <span>{{this.description}}</span>
+      {{/if}}
     </div>
   {{/link-to}}
 </li>
