@@ -74,13 +74,13 @@ gem "loofah"
 gem "css_parser", require: false
 
 gem "omniauth"
-gem "omniauth-facebook"
+gem "omniauth-facebook", ">= 10.0.0"
 gem "omniauth-twitter"
-gem "omniauth-github"
+gem "omniauth-github", ">= 2.0.0"
 
-gem "omniauth-oauth2", require: false
+gem "omniauth-oauth2", ">= 1.8.0", require: false
 
-gem "omniauth-google-oauth2"
+gem "omniauth-google-oauth2", ">= 1.0.0"
 
 gem "oj"
 
@@ -258,8 +258,8 @@ gem "maxminddb"
 
 gem "rails_failover", require: false
 
-gem "faraday"
-gem "faraday-retry"
+gem "faraday", ">= 2.14.1"
+gem "faraday-retry", ">= 2.3.0"
 
 # workaround for faraday-net_http, see
 # https://github.com/ruby/net-imap/issues/16#issuecomment-803086765
